@@ -6,6 +6,7 @@ from fractions import Fraction
 
 import numpy as np
 
+from common.models import MatrixWithRhs
 from common.utils import (
     output_info_level_array,
     output_info_level_2d_matrix,
@@ -145,6 +146,11 @@ def solve_by_lu_decomposition(matrix: np.ndarray, rhs: np.ndarray) -> None:
     output_info_level_2d_matrix(logger, matrix @ inverse_matrix, "6.1. AA^-1")
     output_info_level_2d_matrix(logger, inverse_matrix @ matrix, "6.2. A^-1*A")
     output_info_level_2d_matrix(logger, p_matrix @ matrix, "7. P*A")
+
+
+def solve_system_equations_by_lu_decomposition(matrix_with_rhs: MatrixWithRhs) -> np.ndarray:
+    decomposition = lu_decomposition(matrix_with_rhs.matrix)
+    return equation_system_by_lu(decomposition, matrix_with_rhs.rhs)
 
 
 def main() -> None:

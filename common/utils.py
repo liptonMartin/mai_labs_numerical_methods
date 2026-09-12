@@ -2,12 +2,12 @@ import pathlib
 from collections.abc import Iterable, Sequence
 from fractions import Fraction
 from logging import Logger
-from typing import Any
+from typing import Any, IO
 
 import numpy as np
 import numpy.typing as npt
 
-from common.models import MatrixWithRhs
+from common.models import MatrixWithRhs, MatrixWithRhsPrecision
 
 
 def output_info_level_array(logger: Logger, array: Iterable[Any], name_array: str) -> None:
@@ -36,15 +36,41 @@ def get_input_file_path(path: pathlib.Path) -> pathlib.Path:
 
 
 def parse_matrix_with_rhs_from_file(path: pathlib.Path, dtype: npt.DTypeLike | None = None) -> MatrixWithRhs:
-    matrix, rhs = [], []
     with open(path, encoding="utf-8") as file:
-        for line in file:
-            split_line = line.split()
-            if len(split_line) <= 1:
-                raise RuntimeError(f"Failed to parse matrix with rhs from file {path}")
-
-            matrix.append(list(map(int, split_line[:-1])))
-            rhs.append(int(split_line[-1]))
-
-    numpy_matrix, numpy_rhs = np.array(matrix, dtype=dtype), np.array(rhs, dtype=dtype)
+        try:
+            numpy_matrix, numpy_rhs = _parse_matrix_with_rhs_from_open_file(file, dtype)
+        except RuntimeError as e:
+            raise RuntimeError(f"Failed to parse matrix with rhs from file {path}") from e
     return MatrixWithRhs(matrix=numpy_matrix, rhs=numpy_rhs)
+
+
+def parse_matrix_with_rhs_and_precision_from_file(
+    path: pathlib.Path, dtype: npt.DTypeLike | None = None
+) -> MatrixWithRhsPrecision:
+    with open(path, encoding="utf-8") as file:
+        try:
+            precision = _parse_precision_from_open_file(file)
+            numpy_matrix, numpy_rhs = _parse_matrix_with_rhs_from_open_file(file, dtype)
+        except RuntimeError as e:
+            raise RuntimeError(f"Failed to parse matrix with rhs from file {path}") from e
+    return MatrixWithRhsPrecision(matrix=numpy_matrix, rhs=numpy_rhs, precision=precision)
+
+
+def _parse_matrix_with_rhs_from_open_file(
+    file: IO[str], dtype: npt.DTypeLike | None = None
+) -> tuple[np.ndarray, np.ndarray]:
+    matrix, rhs = [], []
+    for line in file:
+        split_line = line.split()
+        if len(split_line) <= 1:
+            raise RuntimeError("Invalid matrix in file!")
+
+        matrix.append(list(map(int, split_line[:-1])))
+        rhs.append(int(split_line[-1]))
+
+    return np.array(matrix, dtype=dtype), np.array(rhs, dtype=dtype)
+
+
+def _parse_precision_from_open_file(file: IO[str]) -> Fraction:
+    line = file.readline().strip()
+    return Fraction(line)
