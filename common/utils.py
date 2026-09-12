@@ -14,6 +14,10 @@ def output_info_level_array(logger: Logger, array: Iterable[Any], name_array: st
     logger.info("%s: %s", name_array, " ".join(map(str, array)))
 
 
+def output_info_level_array_with_float_type(logger: Logger, array: Iterable[Any], name_array: str) -> None:
+    logger.info("%s: %s", name_array, " ".join(map(str, map(float, array))))
+
+
 def output_info_level_2d_matrix(logger: Logger, matrix: Sequence[Sequence[Any]], name_matrix: str) -> None:
     str_matrix = ""
     n = len(matrix)
