@@ -55,7 +55,10 @@ def parse_matrix_with_rhs_and_precision_from_file(
             raise RuntimeError(f"Failed to parse matrix with rhs from file {path}") from e
     return MatrixWithRhsPrecision(matrix=numpy_matrix, rhs=numpy_rhs, precision=precision)
 
-def parse_matrix_with_precision_from_file(path: pathlib.Path, dtype: npt.DTypeLike | None = None) -> MatrixWithPrecision:
+
+def parse_matrix_with_precision_from_file(
+    path: pathlib.Path, dtype: npt.DTypeLike | None = None
+) -> MatrixWithPrecision:
     with open(path, encoding="utf-8") as file:
         try:
             precision = _parse_precision_from_open_file(file)
@@ -63,7 +66,6 @@ def parse_matrix_with_precision_from_file(path: pathlib.Path, dtype: npt.DTypeLi
         except RuntimeError as e:
             raise RuntimeError(f"Failed to parse matrix with rhs from file {path}") from e
     return MatrixWithPrecision(matrix=numpy_matrix, precision=precision)
-
 
 
 def _parse_matrix_with_rhs_from_open_file(
@@ -81,9 +83,7 @@ def _parse_matrix_with_rhs_from_open_file(
     return np.array(matrix, dtype=dtype), np.array(rhs, dtype=dtype)
 
 
-def _parse_matrix_from_open_file(
-    file: IO[str], dtype: npt.DTypeLike | None = None
-) -> np.ndarray:
+def _parse_matrix_from_open_file(file: IO[str], dtype: npt.DTypeLike | None = None) -> np.ndarray:
     matrix = []
     for line in file:
         split_line = line.split()

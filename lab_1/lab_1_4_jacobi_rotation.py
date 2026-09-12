@@ -6,11 +6,17 @@ from fractions import Fraction
 import numpy as np
 
 from common.models import MatrixWithPrecision
-from common.utils import get_input_file_path, parse_matrix_with_precision_from_file, output_info_level_2d_matrix, \
-    output_info_level_array, output_info_level_scalar
+from common.utils import (
+    get_input_file_path,
+    parse_matrix_with_precision_from_file,
+    output_info_level_2d_matrix,
+    output_info_level_array,
+    output_info_level_scalar,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
+
 
 @dataclass(frozen=True)
 class MaxElement:
@@ -70,7 +76,7 @@ def solve(matrix: MatrixWithPrecision) -> Result:
     return Result(eigenvalues_matrix=matrix, eigenvectors_matrix=eigenvectors_matrix, eigenvalues=eigenvalues)
 
 
-def find_max_abs_not_diagonal_element(matrix: np.ndarray) ->  MaxElement:
+def find_max_abs_not_diagonal_element(matrix: np.ndarray) -> MaxElement:
     max_element = 0
     row, col = -1, -1
     n = len(matrix)
@@ -98,7 +104,10 @@ def main() -> None:
     output_info_level_2d_matrix(logger, result.eigenvectors_matrix, "eigenvectors")
 
     output_info_level_2d_matrix(logger, matrix.matrix @ result.eigenvectors_matrix, "matrix * eigenvectors")
-    output_info_level_2d_matrix(logger, result.eigenvectors_matrix @ result.eigenvalues_matrix, "eigenvectors * eigenvalues")
+    output_info_level_2d_matrix(
+        logger, result.eigenvectors_matrix @ result.eigenvalues_matrix, "eigenvectors * eigenvalues"
+    )
+
 
 if __name__ == "__main__":
     main()
