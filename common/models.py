@@ -5,13 +5,12 @@ import numpy as np
 
 
 @dataclass(frozen=True)
-class MatrixWithRhs:
+class Matrix:
     matrix: np.ndarray
-    rhs: np.ndarray
 
     @property
     def n(self) -> int:
-        return len(self.rhs)
+        return len(self.matrix)
 
     @property
     def m(self) -> int:
@@ -19,5 +18,14 @@ class MatrixWithRhs:
 
 
 @dataclass(frozen=True)
-class MatrixWithRhsPrecision(MatrixWithRhs):
+class MatrixWithRhs(Matrix):
+    rhs: np.ndarray
+
+
+@dataclass(frozen=True)
+class MatrixWithPrecision(Matrix):
     precision: float | Fraction
+
+
+@dataclass(frozen=True)
+class MatrixWithRhsPrecision(MatrixWithRhs, MatrixWithPrecision): ...
