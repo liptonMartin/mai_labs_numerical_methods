@@ -80,6 +80,7 @@ def main() -> None:
 
     exact_solution = solve_system_equations_by_lu_decomposition(matrix)
 
+    output_info_level_scalar(logger, matrix.precision, "precision")
     output_info_level_array_with_float_type(logger, result_fixed_point_iteration.array, "x_array_fixed_point_iteration")
     output_info_level_scalar(
         logger, result_fixed_point_iteration.count_iterations, "count iteration fixed point iteration"
