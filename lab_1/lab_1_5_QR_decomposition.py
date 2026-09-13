@@ -179,6 +179,7 @@ def main() -> None:
         qr = qr_decomposition(matrix)
         eigenvalues = get_eigenvalues_by_qr_decomposition(matrix)
         logger.info("%s root type: ", root_type)
+        output_info_level_2d_matrix(logger, matrix.matrix, "a_matrix")
         output_info_level_2d_matrix(logger, qr.r_matrix, "r_matrix")
         output_info_level_2d_matrix(logger, qr.q_matrix, "q_matrix")
         output_info_level_2d_matrix(logger, qr.q_matrix @ qr.r_matrix, "QR matrix")
