@@ -29,3 +29,11 @@ class MatrixWithPrecision(Matrix):
 
 @dataclass(frozen=True)
 class MatrixWithRhsPrecision(MatrixWithRhs, MatrixWithPrecision): ...
+
+
+@dataclass(frozen=True)
+class Block2On2:
+    a: float
+    b: float
+    c: float
+    d: float
