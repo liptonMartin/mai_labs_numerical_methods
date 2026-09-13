@@ -38,7 +38,7 @@ class Eigenvalues:
 def qr_decomposition(matrix: Matrix) -> QRDecomposition:
     matrix, n = matrix.matrix, matrix.n
 
-    q_matrix = np.eye(n, dtype=float)
+    q_matrix = np.eye(n, dtype=Fraction)
     r_matrix = matrix.copy()
 
     for i in range(n - 1):
@@ -50,7 +50,7 @@ def qr_decomposition(matrix: Matrix) -> QRDecomposition:
         norm = calc_vector_norm(b)
 
         # e1 размера n - i
-        e_1 = np.zeros(n - i, dtype=float)
+        e_1 = np.zeros(n - i, dtype=Fraction)
         e_1[0] = 1
 
         # sign(b[0]), причём sign(0) = 1
@@ -62,10 +62,10 @@ def qr_decomposition(matrix: Matrix) -> QRDecomposition:
         v_matrix = v[:, np.newaxis]
 
         # H_small = I - 2vv^T / (v^Tv)
-        h_small = np.eye(n - i, dtype=float) - 2 * (v_matrix @ v_matrix.T) / (v_matrix.T @ v_matrix)
+        h_small = np.eye(n - i, dtype=Fraction) - 2 * (v_matrix @ v_matrix.T) / (v_matrix.T @ v_matrix)
 
         # Встраиваем H_small в H
-        h_matrix = np.eye(n, dtype=float)
+        h_matrix = np.eye(n, dtype=Fraction)
         h_matrix[i:, i:] = h_small
 
         # A_i = H_i A_(i-1)
@@ -155,8 +155,10 @@ def get_eigenvalues_from_matrix(
 
         # case 2: блок 2 на 2 - комплексный корень
         if i != n - 1 and is_stabilize_complex_block(current_matrix, prev_matrix, i, precision):
-            eigenvalues = get_complex_eigenvalues(current_matrix, i)
-            result.extend(eigenvalues)
+            eigenvalue_1, eigenvalue_2 = get_complex_eigenvalues(current_matrix, i)
+            if eigenvalue_1.imag == 0 and eigenvalue_2.imag == 0:
+                eigenvalue_1, eigenvalue_2 = float(eigenvalue_1.real), float(eigenvalue_2.real)
+            result.extend((eigenvalue_1, eigenvalue_2))
             i += 2
             continue
 
@@ -172,7 +174,7 @@ def main() -> None:
         name = filename.stem + "_" + root_type
 
         input_file_path = get_input_file_path(pathlib.Path(base_dir / name))
-        matrix = parse_matrix_with_precision_from_file(input_file_path, dtype=float)
+        matrix = parse_matrix_with_precision_from_file(input_file_path, dtype=Fraction)
 
         qr = qr_decomposition(matrix)
         eigenvalues = get_eigenvalues_by_qr_decomposition(matrix)
